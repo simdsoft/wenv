@@ -1,0 +1,24 @@
+#!/bin/bash
+
+SCRIPT_ROOT=$(dirname "$0")
+SCRIPT_ROOT=$(cd "$SCRIPT_ROOT" && pwd -P)
+
+wenv_root=$(realpath $SCRIPT_ROOT/../..)
+
+mysql_user=$1
+mysql_pass="$2"
+mysql_db=$3
+force=$4
+
+# backup db per 7 days
+BACKUP_INTERVAL=7
+LAST_BACKUP_FILE="$wenv_root/var/dump/last_backup.txt"
+
+TODAY=$(date +%Y-%m-%d)
+
+if [ "$force" = 'true' ] || [ ! -f $LAST_BACKUP_FILE ] || (( $(($(date -d $TODAY +%s) - $(date -d $(cat $LAST_BACKUP_FILE) +%s))) >= BACKUP_INTERVAL * 86400 )); then
+  mysqldump --no-tablespaces -u $mysql_user -p$mysql_pass $mysql_db > $wenv_root/var/dump/dump-${TODAY}
+  echo $TODAY > $LAST_BACKUP_FILE
+else
+  echo 'skip backup db'
+fi

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# @certbot-v2.11.1
+
+SCRIPT_ROOT=$(dirname "$0")
+SCRIPT_ROOT=$(cd "$SCRIPT_ROOT" && pwd -P)
+
+wenv_root=$(realpath $SCRIPT_ROOT/../..)
+
+/opt/certbot/bin/certbot --work-dir $wenv_root --config-dir $wenv_root/etc/letsencrypt --logs-dir $wenv_root/var/letsencrypt/logs "$@"
